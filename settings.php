@@ -17,6 +17,9 @@ class pBS
 	// User Handler.
 	private static $user = 'smf';
 
+	// Template Handler.
+	private static $tpl = 'smf';
+
 	// Language files location and default.
 	private static $languages = './languages';
 	private static $default_language = 'english';

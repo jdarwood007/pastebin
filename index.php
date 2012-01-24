@@ -1,4 +1,5 @@
 <?php
+
 // Show me the sauce.
 if (isset($_GET['sauce2']))
 {
@@ -60,6 +61,7 @@ class pB
 	private $geshi_languages = array();
 	private $db = null;
 	private $usr = null;
+	private $tpl = null;
 
 	/*
 	* Setup the settings when creating the object.
@@ -93,6 +95,17 @@ class pB
 			$class = 'pUser_' . pBS::get('user');
 			if (class_exists($class))
 				$this->usr = new $class;
+		}
+
+		// Start up our User handler.
+		require_once(pBS::get('sources') . '/tpl.php');
+		if (file_exists(pBS::get('sources') . '/tpl-' . pBS::get('tpl') . '.php'))
+		{
+			require_once(pBS::get('sources') . '/tpl-' . pBS::get('tpl') . '.php');
+
+			$class = 'pTPL_' . pBS::get('user');
+			if (class_exists($class))
+				$this->tpl = new $class;
 		}
 
 		// Start getting things going.
