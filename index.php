@@ -13,16 +13,6 @@ $pasteBin = new pB();
 // Show our recent section.
 $pasteBin->showRecent();
 
-// Modified for WordPress, but this handles the sidebar and css.
-if (defined('WPLANG'))
-{
-	wp_enqueue_style('pastebin', pBS::get('css'));
-	ob_start();
-	$pasteBin->showRecent();
-	$specialPage['sidebar'] = ob_get_contents();
-	ob_end_clean();
-}
-
 // Handles the actions.
 if (isset($_POST['submit']))
 	$pasteBin->action_paste();
@@ -33,23 +23,6 @@ else
 
 if (defined('WPLANG'))
 	$specialPage['title'] = $pasteBin->title;
-
-/*
-		// Added this for myself.
-		if (defined('WPLANG2'))
-			echo '
-			<br />
-			<ul>
-				<li class="widget">
-					<h2 class="widgettitle">See the Source</h2>
-					<ul>
-						<li><a href="./?sauce">Main Script</li>
-						<li><a href="./?sauce&f=settings">Settings</li>
-						<li><a href="./?sauce&f=language">Language</li>
-					</ul>
-				</li>
-			</ul>';
-*/
 
 /*
 * Main PasteBin class

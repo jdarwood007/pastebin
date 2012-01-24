@@ -24,7 +24,7 @@ class pDB_smf extends pDB
 			$_COOKIE[$cookiename] = stripslashes($_COOKIE[$cookiename]);
 
 		// We need to setup this before we continue
-		if (pBS::get('smf_use_theme'))
+		if (pBS::get('smf_use_theme') && pBS::get('tpl') == 'smf')
 		{
 			$ssi_theme = pBS::get('smf_theme_id');
 			$ssi_layers = array('html', 'body');

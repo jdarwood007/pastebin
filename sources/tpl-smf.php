@@ -6,7 +6,7 @@
 class pTPL_smf extends pTPL
 {
 	/*
-	* We simply just create the object to the user_info handler.
+	* We will simply start SMF up if it wasn't already.
 	*/
 	public function __construct()
 	{

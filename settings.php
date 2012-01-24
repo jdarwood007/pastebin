@@ -18,10 +18,10 @@ class pBS
 	private static $user = 'smf';
 
 	// Template Handler.
-	private static $tpl = 'smf';
+	private static $tpl = 'wp';
 
 	// Any preloader file needed?
-	private static $preload = ''; //'__integrate.php';
+	private static $preload = '__integrate.php';
 
 	// Language files location and default.
 	private static $languages = './languages';
@@ -66,6 +66,10 @@ class pBS
 	{
 		if (is_callable('pBSe::get') && pBSe::get($var) !== null)
 			return pBSe::get($var);
+
+		if (!isset(self::$$var))
+			return null;
+
 		return self::$$var;
 	}
 }
