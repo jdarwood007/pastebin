@@ -119,8 +119,9 @@ class pDB_smf extends pDB
 		$data[use_geshi] Bool If we should use geshi highlighting or not.
 		$data[language] String The language of the code, default is php.
 		$data[body] String the actual contents of the paste.
+	* @param $do_create Should we create this or not?  Only set this to false when we shouldn't.
 	*/
-	public function addPasteTest($data)
+	public function addPasteTest($data, $do_create)
 	{
 	}
 

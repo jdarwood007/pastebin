@@ -39,7 +39,7 @@ class pTPL_wp extends pTPL
 		global $specialPage;
 
 		// Lets not always show the source links.
-		if (pBS::get('show_source_link'))
+		if (defined('PB_SHOW_SOURCE'))
 			echo '
 			<br />
 			<ul>

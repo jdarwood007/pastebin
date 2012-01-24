@@ -21,6 +21,10 @@ if (isset($_GET['view']))
 else
 	$pasteBin->action_index();
 
+// Shutdown.
+if (!defined('PB_CONTINUE'))
+	exit;
+
 /*
 * Main PasteBin class
 */
@@ -55,10 +59,10 @@ class pB
 			if (class_exists($class))
 				$this->db = new $class;
 			else
-				this->error('Database is defined but no such class exists.');
+				$this->error('Database is defined but no such class exists.');
 		}
 		else
-			this->error('No database handler is defined.');
+			$this->error('No database handler is defined.');
 
 		// Start up our User handler.
 		require_once(pBS::get('sources') . '/user.php');
@@ -70,10 +74,10 @@ class pB
 			if (class_exists($class))
 				$this->usr = new $class;
 			else
-				this->error('User is defined but no such class exists.');
+				$this->error('User is defined but no such class exists.');
 		}
 		else
-			this->error('No user handler is defined.');
+			$this->error('No user handler is defined.');
 
 		// Start up our Template handler.
 		require_once(pBS::get('sources') . '/tpl.php');
@@ -85,10 +89,10 @@ class pB
 			if (class_exists($class))
 				$this->tpl = new $class;
 			else
-				this->error('Template is defined but no such class exists.');
+				$this->error('Template is defined but no such class exists.');
 		}
 		else
-			this->error('No template handler is defined.');
+			$this->error('No template handler is defined.');
 
 		// Start getting things going.
 		$this->loadLanguage();
@@ -106,7 +110,7 @@ class pB
 		elseif (isset($_GET['lang']) && file_exists(pBS::get('languages') . '/' . strtolower(htmlspecialchars($_GET['lang'])) . '.php'))
 		{
 			if (strpos($_GET['lang'], 'http://') !== false || strpos($_GET['lang'], 'ftp://') !== false)
-				exit('Hacking attempt');
+				$this->error('Invalid string in url.');
 
 			$language = strtolower(htmlspecialchars($_GET['lang']));
 		}
@@ -302,7 +306,7 @@ class pB
 		);
 
 		// Do a test.
-		$this->db->addPasteTest(&$data);
+		$this->db->addPasteTest(&$data, &$do_create);
 
 		if (!$do_create)
 		{
@@ -321,8 +325,8 @@ class pB
 
 		// Send us there.
 		redirectexit($this->URL('view', $result['id'], array(
-			'update' => isset($data['updated']) ? 't' . time() : '',
-			'key' => !empty($data['key']) ? $data['key'] : '',
+			'update' => isset($result['updated']) ? 't' . time() : '',
+			'key' => !empty($result['key']) ? $result['key'] : '',
 		)));
 	}
 
