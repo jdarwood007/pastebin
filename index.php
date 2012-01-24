@@ -14,6 +14,7 @@ if (isset($_GET['sauce2']))
 	exit('</body></html>');
 }
 
+error_reporting(E_ALL);
 $_SERVER['REQUEST_URI'] = '/pastebin';
 require_once('../wp-ssi.php');
 $specialPage['noClear'] = true;
@@ -467,7 +468,7 @@ class pB
 
 		if (pBS::get('use_geshi') && !empty($paste['use_geshi']))
 		{
-			$type = !empty($_REQUEST['type']) ? $_REQUEST['type'] : (!empty($paste['language']) ? $Paste['language'] : 'php');
+			$type = !empty($paste['language']) ? $paste['language'] : 'php';
 
 			include_once(pBS::get('geshi_location')  . '/geshi.php');
 			

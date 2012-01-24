@@ -149,7 +149,7 @@ class pDB_smf extends pDB
 
 		// Options needed for our post.
 		$topicOptions = array(
-			'id'		=> (!empty($paste['id']) ? $topic['id'] : 0) ,
+			'id'		=> (!empty($paste['id']) ? $paste['id'] : 0) ,
 			'board'		=> pBS::get('smf_paste_board'),
 			'mark_as_read'	=> false,
 			);

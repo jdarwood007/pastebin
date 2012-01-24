@@ -11,7 +11,7 @@ class pUser_smf extends pUser
 	private $usr = null;
 
 	/*
-	* We don't need to do this since SMF is already started.
+	* We simply just create the object to the user_info handler.
 	*/
 	public function __construct()
 	{
