@@ -99,7 +99,7 @@ class pB
 		$this->loadGeshi();
 
 		// At this point we are ready to go.
-		if (pBS::get('use_smf_theme'))
+		if (pBS::get('smf_use_theme'))
 			echo '
 			<div id="paste_recent" class="alignright">', $this->showRecent(), '</div>';
 	}
@@ -150,6 +150,16 @@ class pB
 		sort($languages);
 
 		$this->geshi_languages = $languages;
+	}
+
+	/*
+	* Handle a fatal Error
+	*/
+	public function error($msg)
+	{
+		// For now.
+		debug_print_backtrace();
+		exit($msg);
 	}
 
 	/*
@@ -222,11 +232,11 @@ class pB
 
 		// Trying to save this paste?
 		if (isset($_POST['save']))
-			$errors = $this->makePaste(0);
+			$warnings = $this->makePaste(0);
 
 		// Show any errors
-		if (!empty($errors))
-			echo '<div class="error_message">', implode('<br />', $errors), '</div>';
+		if (!empty($warnings))
+			echo '<div class="error_message">', implode('<br />', $warnings), '</div>';
 
 		$this->postForm((!empty($_POST['code']) ? $_POST['code'] : ''));
 	}
@@ -284,7 +294,7 @@ class pB
 
 		if (!$do_create)
 		{
-			$this->errors[] = 'Missing information (Username/email)';
+			$this->warningss[] = 'Missing information (Username/email)';
 
 			if (!empty($_POST['view']))
 				$this->action_view($_POST['view']);
@@ -446,9 +456,11 @@ class pB
 		// Get it from the database.
 		$paste = $this->db->fetchPaste($id);
 
-		if (!$this->usr->is_admin() && !empty($Paste['key']) && (empty($_REQUEST['key']) || $Paste['key'] != $_REQUEST['key']))
-			$this->error(pBL('error_no_access'), true);
-		elseif ($paste['board_id'] != pBS::get('paste_board'))
+		// The fetch threw an error.
+		if (isset($paste['error']))
+			$this->error($paste['error'], !empty($paste['fatal']) ? true : false);
+
+		if (!$this->usr->is_admin() && !empty($paste['key']) && (empty($_REQUEST['key']) || $paste['key'] != $_REQUEST['key']))
 			$this->error(pBL('error_no_access'), true);
 		elseif (empty($paste['approved']))
 			$this->error(pBL('error_approval'), true);

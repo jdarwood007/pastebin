@@ -23,10 +23,10 @@ class pBS
 
 	// Where SMF is at.
 	private static $smf_dir = '../forum/';
-	private static $paste_board = 4;
-	private static $increase_postcout = true;
-	private static $enable_post_approval = false;
-	private static $use_smf_theme = false	;
+	private static $smf_paste_board = 4;
+	private static $smf_increase_postcout = true;
+	private static $smf_post_approval = false;
+	private static $smf_use_theme = false	;
 	private static $smf_theme_id = 1;
 
 	// The URLs

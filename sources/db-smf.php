@@ -24,7 +24,7 @@ class pDB_smf extends pDB
 			$_COOKIE[$cookiename] = stripslashes($_COOKIE[$cookiename]);
 
 		// We need to setup this before we continue
-		if (pBS::get('use_smf_theme'))
+		if (pBS::get('smf_use_theme'))
 		{
 			$ssi_theme = pBS::get('smf_theme_id');
 			$ssi_layers = array('html', 'body');
@@ -47,7 +47,7 @@ class pDB_smf extends pDB
 			ORDER BY id_last_msg DESC
 			LIMIT {int:limit_recent}',
 			array(
-				'paste_board' => pBS::get('paste_board'),
+				'paste_board' => pBS::get('smf_paste_board'),
 				'limit_recent' => $limit,
 				));
 
@@ -73,11 +73,15 @@ class pDB_smf extends pDB
 			AND id_board = {int:paste_board}
 			ORDER BY poster_time DESC',
 			array(
-				'paste_board' => pBS::get('paste_board'),
+				'paste_board' => pBS::get('smf_paste_board'),
 				'id_topic' => $id,
 				));
 		$topic = smcFunc::db_fetch_assoc($request);
 		smcFunc::db_free_result($request);
+
+		// Need to check their access.
+		if ($topic['board_id'] != pBS::get('smf_paste_board'))
+			return array('error' => pBL('error_no_access'));
 
 		$ops = explode(':v:', $topic['subject']);
 		unset($ops[0]);
@@ -146,7 +150,7 @@ class pDB_smf extends pDB
 		// Options needed for our post.
 		$topicOptions = array(
 			'id'		=> (!empty($paste['id']) ? $topic['id'] : 0) ,
-			'board'		=> pBS::get('paste_board'),
+			'board'		=> pBS::get('smf_paste_board'),
 			'mark_as_read'	=> false,
 			);
 		$posterOptions = array(
@@ -154,13 +158,13 @@ class pDB_smf extends pDB
 			'name'		=> $data['name'],
 			'email'		=> $data['email'],
 			'ip'		=> userInfo::_()->ip,
-			'update_post_count'	=> (pBS::get('increase_postcout') && isset(userInfo::_()->id) ? 1 : 0),
+			'update_post_count'	=> (pBS::get('smf_increase_postcout') && isset(userInfo::_()->id) ? 1 : 0),
 			);
 		$msgOptions = array(
 			'id'		=> 0,
 			'subject'	=> 'Paste-' . time() . ':v:use_geshi-' . (!empty($data['use_geshi']) ? 1 : 0) . ':v:type-' . (!empty($data['language']) ? $data['language'] : 'php') . (!empty($data['key']) ? ':v:p-' . $data['key'] : ''),
 			'body'		=> htmlspecialchars($data['body']),
-			'approved'	=> pBS::get('enable_post_approval') ? 0 : 1,
+			'approved'	=> pBS::get('smf_post_approval') ? 0 : 1,
 			);
 
 		// Actually create the paste.
