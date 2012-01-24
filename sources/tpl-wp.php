@@ -53,9 +53,8 @@ class pTPL_wp extends pTPL
 				<li class="widget">
 					<h2 class="widgettitle">See the Source</h2>
 					<ul>
-						<li><a href="./?sauce">Main Script</li>
-						<li><a href="./?sauce&f=settings">Settings</li>
-						<li><a href="./?sauce&f=language">Language</li>
+						<li><a href="http://git.sleepycode.com/?a=summary&p=SMF%20Pastebin">Local Source</li>
+						<li><a href="https://github.com/jdarwood007/pastebin">GitHub</li>
 					</ul>
 				</li>
 			</ul>';
