@@ -6,6 +6,16 @@
 class pTPL_wp extends pTPL
 {
 	/*
+	* Do the header
+	*/
+	public function htmlHead($title)
+	{
+		global $specialPage;
+
+		$specialPage['title'] = $title;
+	}
+
+	/*
 	* Lets get things cooking.
 	*/
 	public function __construct()

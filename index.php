@@ -21,9 +21,6 @@ if (isset($_GET['view']))
 else
 	$pasteBin->action_index();
 
-if (defined('WPLANG'))
-	$specialPage['title'] = $pasteBin->title;
-
 /*
 * Main PasteBin class
 */
