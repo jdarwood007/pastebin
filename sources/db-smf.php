@@ -28,6 +28,10 @@ class pDB_smf extends pDB
 		{
 			$ssi_theme = pBS::get('smf_theme_id');
 			$ssi_layers = array('html', 'body');
+
+			// Since SSI is loading the theme, we can't do this later.
+			$context['html_headers'] = '
+	<link rel="stylesheet" type="text/css" href="' . pBS::get('css')  . '" />';
 		}
 
 		require_once(pBS::get('smf_dir') . '/SSI.php');
@@ -95,7 +99,7 @@ class pDB_smf extends pDB
 		// This is how the data should return.
 		return array(
 			'id' => $topic['id_topic'],
-			'key' => $Paste['p'],
+			'key' => isset($Paste['p']) ? $Paste['p'] : '',
 			'board_id' => $topic['board_id'],
 			'approved' => $topic['approved'],
 			'use_geshi' => $Paste['use_geshi'],

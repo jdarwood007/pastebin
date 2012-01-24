@@ -20,6 +20,9 @@ class pBS
 	// Template Handler.
 	private static $tpl = 'smf';
 
+	// Any preloader file needed?
+	private static $preload = ''; //'__integrate.php';
+
 	// Language files location and default.
 	private static $languages = './languages';
 	private static $default_language = 'english';
@@ -29,7 +32,7 @@ class pBS
 	private static $smf_paste_board = 4;
 	private static $smf_increase_postcout = true;
 	private static $smf_post_approval = false;
-	private static $smf_use_theme = false	;
+	private static $smf_use_theme = true;
 	private static $smf_theme_id = 1;
 
 	// The URLs

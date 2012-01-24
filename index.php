@@ -1,31 +1,17 @@
 <?php
 
-// Show me the sauce.
-if (isset($_GET['sauce2']))
-{
-	echo '<!DOCTYPE html><html><head><title>PasteBin Source code</title></head><body>';
+// Load the primary file.
+require_once(dirname(__FILE__) . '/settings.php');
 
-	if (isset($_GET['f']) && $_GET['f'] == 'settings')
-		highlight_file(dirname(__FILE__) . '/settings.php');
-	elseif (isset($_GET['f']) && $_GET['f'] == 'language')
-		highlight_file(dirname(__FILE__) . '/languages/english.php');
-	else
-		highlight_file(__FILE__);
-
-	exit('</body></html>');
-}
-
-error_reporting(E_ALL);
-$_SERVER['REQUEST_URI'] = '/pastebin';
-require_once('../wp-ssi.php');
-$specialPage['noClear'] = true;
-$specialPage['class'] = 'post';
-$specialPage['contentClass'] = '';
-$specialPage['headerTitle'] = 'PasteBin';
-$specialPage['pageTitlePrefix'] = 'PasteBin';
+// Do a preload if needed.
+if (pBS::get('preload') != '' && file_exists(dirname(__FILE__) . '/' . pBS::get('preload')))
+	require_once(dirname(__FILE__) . '/' . pBS::get('preload'));
 
 // Start the PasteBin up.
 $pasteBin = new pB();
+
+// Show our recent section.
+$pasteBin->showRecent();
 
 // Modified for WordPress, but this handles the sidebar and css.
 if (defined('WPLANG'))
@@ -49,6 +35,23 @@ if (defined('WPLANG'))
 	$specialPage['title'] = $pasteBin->title;
 
 /*
+		// Added this for myself.
+		if (defined('WPLANG2'))
+			echo '
+			<br />
+			<ul>
+				<li class="widget">
+					<h2 class="widgettitle">See the Source</h2>
+					<ul>
+						<li><a href="./?sauce">Main Script</li>
+						<li><a href="./?sauce&f=settings">Settings</li>
+						<li><a href="./?sauce&f=language">Language</li>
+					</ul>
+				</li>
+			</ul>';
+*/
+
+/*
 * Main PasteBin class
 */
 class pB
@@ -68,9 +71,6 @@ class pB
 	*/
 	public function __construct()
 	{
-		// Load the primary file.
-		require_once(dirname(__FILE__) . '/settings.php');
-
 		// Load up any settings that apply only to this pastebin.
 		if (file_exists(dirname(__FILE__) . '/settings-' . pathinfo(basename($_SERVER['SCRIPT_FILENAME']), PATHINFO_FILENAME) . '.php'))
 			require_once(dirname(__FILE__) . '/settings-' . pathinfo(basename($_SERVER['SCRIPT_FILENAME']), PATHINFO_FILENAME). '.php');
@@ -84,7 +84,9 @@ class pB
 			$class = 'pDB_' . pBS::get('db');
 			if (class_exists($class))
 				$this->db = new $class;
+			// @NOTE: NEEDS ERRORS HERE
 		}
+		// @NOTE: NEEDS ERRORS HERE
 
 		// Start up our User handler.
 		require_once(pBS::get('sources') . '/user.php');
@@ -95,7 +97,9 @@ class pB
 			$class = 'pUser_' . pBS::get('user');
 			if (class_exists($class))
 				$this->usr = new $class;
+			// @NOTE: NEEDS ERRORS HERE
 		}
+		// @NOTE: NEEDS ERRORS HERE
 
 		// Start up our User handler.
 		require_once(pBS::get('sources') . '/tpl.php');
@@ -103,19 +107,16 @@ class pB
 		{
 			require_once(pBS::get('sources') . '/tpl-' . pBS::get('tpl') . '.php');
 
-			$class = 'pTPL_' . pBS::get('user');
+			$class = 'pTPL_' . pBS::get('tpl');
 			if (class_exists($class))
 				$this->tpl = new $class;
+			// @NOTE: NEEDS ERRORS HERE
 		}
+		// @NOTE: NEEDS ERRORS HERE
 
 		// Start getting things going.
 		$this->loadLanguage();
 		$this->loadGeshi();
-
-		// At this point we are ready to go.
-		if (pBS::get('smf_use_theme'))
-			echo '
-			<div id="paste_recent" class="alignright">', $this->showRecent(), '</div>';
 	}
 
 	/*
@@ -244,6 +245,9 @@ class pB
 	{
 		$this->title = pBL('index_title');
 
+		if (is_callable(array($this->tpl, 'htmlHead')))
+			$this->tpl->htmlHead($this->title);
+
 		// Trying to save this paste?
 		if (isset($_POST['save']))
 			$warnings = $this->makePaste(0);
@@ -253,6 +257,9 @@ class pB
 			echo '<div class="error_message">', implode('<br />', $warnings), '</div>';
 
 		$this->postForm((!empty($_POST['code']) ? $_POST['code'] : ''));
+
+		if (is_callable(array($this->tpl, 'htmlFooter')))
+			$this->tpl->htmlFooter();
 	}
 
 	/*
@@ -262,6 +269,9 @@ class pB
 	public function action_view($id)
 	{
 		$this->title = pBL('view_title', $id);
+
+		if (is_callable(array($this->tpl, 'htmlHead')))
+			$this->tpl->htmlHead($this->title);
 
 		$paste = $this->showPaste($id);
 
@@ -277,6 +287,9 @@ class pB
 			</div>';
 
 		$this->postForm($paste['body'], $id, $paste['use_geshi'], $paste['language']);
+
+		if (is_callable(array($this->tpl, 'htmlFooter')))
+			$this->tpl->htmlFooter();
 	}
 
 	/*
@@ -339,6 +352,10 @@ class pB
 		if ($recent_limit > 0)
 			$recent = $this->db->fetchRecent($recent_limit);
 
+		// Start to wrap it in a template if needed.
+		if (is_callable(array($this->tpl, 'recentTop')))
+			$this->tpl->recentTop();
+
 		// Output this.
 		echo '
 			<ul>		
@@ -356,20 +373,8 @@ class pB
 				</li>
 			</ul>';
 
-		// Added this for myself.
-		if (defined('WPLANG2'))
-			echo '
-			<br />
-			<ul>
-				<li class="widget">
-					<h2 class="widgettitle">See the Source</h2>
-					<ul>
-						<li><a href="./?sauce">Main Script</li>
-						<li><a href="./?sauce&f=settings">Settings</li>
-						<li><a href="./?sauce&f=language">Language</li>
-					</ul>
-				</li>
-			</ul>';
+		if (is_callable(array($this->tpl, 'recentBottom')))
+			$this->tpl->recentBottom();
 	}
 
 	/*
@@ -381,6 +386,9 @@ class pB
 	*/
 	public function postForm($code, $id = 0, $use_geshi = true, $geshi_language = 'php')
 	{
+		if (is_callable(array($this->tpl, 'postTop')))
+			$this->tpl->postTop();
+
 		echo '
 			<form method="post" action="', $this->URL('post'), '">
 				<div id="name_container">
@@ -414,9 +422,9 @@ class pB
 				</div>
 
 				<div id="code_container">
-					<div id="code_text" class="container"text">', pBL('code'), ':</div>
+					<div id="code_textf" class="container"text">', pBL('code'), ':</div>
 					<div id="code_value" class="container_value">
-						<textarea name="code" style="width: 100%;" rows="30">', $code, '</textarea>
+						<textarea name="code" rows="30">', $code, '</textarea>
 					</div>
 				</div>
 
@@ -459,6 +467,9 @@ class pB
 		echo '
 				<input id="submit" type="submit" name="submit" value="', pBL('submit'), '" />
 			</form>';
+
+		if (is_callable(array($this->tpl, 'postBottom')))
+			$this->tpl->postBottom();
 	}
 
 	/*

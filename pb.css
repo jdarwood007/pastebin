@@ -16,3 +16,14 @@ pre div
 {
 	display: inline !important;
 }
+
+#code_value textarea
+{
+	width: 100%;
+}
+
+/* For when in SMF */
+#content_section #code_value textarea
+{
+	width: 80%;
+}

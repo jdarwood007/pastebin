@@ -15,6 +15,15 @@ class pUser_smf extends pUser
 	*/
 	public function __construct()
 	{
+		// SMF isn't started yet.
+		if (!defined('SMF'))
+		{
+			require_once(dirname(__FILE__) . '/db-smf.php');
+
+			$discard = new pDB_smf;
+			unset($discard);
+		}
+
 		$this->usr = userInfo::_();
 	}
 

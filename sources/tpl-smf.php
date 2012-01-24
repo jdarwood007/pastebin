@@ -10,13 +10,21 @@ class pTPL_smf extends pTPL
 	*/
 	public function __construct()
 	{
+		// SMF isn't started yet.
+		if (!defined('SMF'))
+		{
+			require_once(dirname(__FILE__) . '/db-smf.php');
+
+			$discard = new pDB_smf;
+			unset($discard);
+		}
 	}
 
 	/*
 	* Do the header
 	* @Note: Because we used ssi earlier to star the SMF theme, we have nothing to do here
 	*/
-	public function html_head($title)
+	public function htmlHead($title)
 	{
 		global $context;
 
@@ -26,8 +34,26 @@ class pTPL_smf extends pTPL
 	/*
 	* The very last thing before we close up shop.
 	*/
-	public function html_footer()
+	public function htmlFooter()
 	{
 		ssi_shutdown();
+	}
+
+	/*
+	* Custom code before the top part of recent.
+	*/
+	public function recentTop()
+	{
+		echo '
+			<div id="paste_recent" class="floatright">';
+	}
+
+	/*
+	* Custom code before the bottom part of recent.
+	*/
+	public function recentBottom()
+	{
+		echo '
+			</div>';
 	}
 }
