@@ -1,0 +1,18 @@
+.container_text
+{
+	font-weight: bold;
+}
+
+#settings_container
+{
+	list-style-type: none;
+}
+
+#formated_paste
+{
+	overflow: auto;
+}
+pre div
+{
+	display: inline !important;
+}
