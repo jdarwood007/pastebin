@@ -1,12 +1,12 @@
 <?php
 
 /*
-* Basic handler for database interaction
+* Basic handler for database interaction.
 */
 class pDB
 {
 	/*
-	* How to create a key
+	* How to create a key.
 	*/
 	public function generateKey()
 	{

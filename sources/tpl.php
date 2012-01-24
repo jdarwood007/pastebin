@@ -1,7 +1,7 @@
 <?php
 
 /*
-* Sets up the basic Theme handler for Pastebin
+* Basic Theme handler for Pastebin.
 */
 class pTPL
 {

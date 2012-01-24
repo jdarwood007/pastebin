@@ -27,7 +27,7 @@ else
 class pB
 {
 	/*
-	* Some basic stuff
+	* Some basic stuff.
 	*/
 	public $title = 'PasteBin';
 	private $action = 'index';
@@ -54,9 +54,11 @@ class pB
 			$class = 'pDB_' . pBS::get('db');
 			if (class_exists($class))
 				$this->db = new $class;
-			// @NOTE: NEEDS ERRORS HERE
+			else
+				this->error('Database is defined but no such class exists.');
 		}
-		// @NOTE: NEEDS ERRORS HERE
+		else
+			this->error('No database handler is defined.');
 
 		// Start up our User handler.
 		require_once(pBS::get('sources') . '/user.php');
@@ -67,11 +69,13 @@ class pB
 			$class = 'pUser_' . pBS::get('user');
 			if (class_exists($class))
 				$this->usr = new $class;
-			// @NOTE: NEEDS ERRORS HERE
+			else
+				this->error('User is defined but no such class exists.');
 		}
-		// @NOTE: NEEDS ERRORS HERE
+		else
+			this->error('No user handler is defined.');
 
-		// Start up our User handler.
+		// Start up our Template handler.
 		require_once(pBS::get('sources') . '/tpl.php');
 		if (file_exists(pBS::get('sources') . '/tpl-' . pBS::get('tpl') . '.php'))
 		{
@@ -80,9 +84,11 @@ class pB
 			$class = 'pTPL_' . pBS::get('tpl');
 			if (class_exists($class))
 				$this->tpl = new $class;
-			// @NOTE: NEEDS ERRORS HERE
+			else
+				this->error('Template is defined but no such class exists.');
 		}
-		// @NOTE: NEEDS ERRORS HERE
+		else
+			this->error('No template handler is defined.');
 
 		// Start getting things going.
 		$this->loadLanguage();
@@ -114,7 +120,7 @@ class pB
 	}
 
 	/*
-	* Setup GeSHI
+	* Setup GeSHI.
 	*/
 	public function loadGeshi()
 	{
@@ -138,21 +144,28 @@ class pB
 	}
 
 	/*
-	* Handle a fatal Error
+	* Handle a fatal Error.
+	* @param $msg String The error message to display.
 	*/
 	public function error($msg)
 	{
-		// For now.
-		debug_print_backtrace();
+		// Debug this if we want to debug it.
+		if (pBS::get('debug'))
+		{
+			echo '<pre>';
+			debug_print_backtrace();
+			echo '</pre>';
+		}
+
 		exit($msg);
 	}
 
 	/*
-	* Format a URL
-	* @param $act string The action we want to use
-	* @param $sa string The value of the action
+	* Format a URL for output.
+	* @param $act string The action we want to use.
+	* @param $sa string The value of the action.
 	* @param $extras array An array of key => value containing extras to add to the url.
-	* @return string Return the url.
+	* @return string The formated URL, ready for output in links.
 	*/
 	public function URL($act, $sa = '', $extras = array())
 	{
@@ -174,6 +187,7 @@ class pB
 				$url_prefix .= str_replace($_SERVER['DOCUMENT_ROOT'], '', __FILE__) . '?';
 		}
 
+		// Special cases we do certain things to the url.
 		if ($act == 'index' && $url_prefix{strlen($url_prefix) -1} == '?')
 			return substr($url_prefix, 0, -1);
 		elseif ($act == 'index')
@@ -201,7 +215,7 @@ class pB
 			}
 		}
 
-		// This may happen with a portal..
+		// This may happen with a portal.
 		if (pBS::get('use_portal'))
 			$url = str_replace('?;', '?', $url);
 
@@ -209,7 +223,7 @@ class pB
 	}
 
 	/*
-	* Show a new past form
+	* Show a new past form.
 	*/
 	public function action_index()
 	{
@@ -222,7 +236,7 @@ class pB
 		if (isset($_POST['save']))
 			$warnings = $this->makePaste(0);
 
-		// Show any errors
+		// Show any errors.
 		if (!empty($warnings))
 			echo '<div class="error_message">', implode('<br />', $warnings), '</div>';
 
@@ -233,8 +247,8 @@ class pB
 	}
 
 	/*
-	* Show a paste
-	* @param $id int The id of the paste
+	* Show a paste.
+	* @param $id int The id of the paste.
 	*/
 	public function action_view($id)
 	{
@@ -245,6 +259,7 @@ class pB
 
 		$paste = $this->showPaste($id);
 
+		// Give admins a hint what the key is.
 		if (!empty($paste['key']) && $this->usr->is_admin())
 			echo '
 			<div class="information"><b>Key:</b> ', $paste['key'], '</div>';
@@ -301,7 +316,7 @@ class pB
 			return false;
 		}
 
-		// Valid Numbers only..
+		// Valid Numbers only.
 		$result = $this->db->addPaste($data);
 
 		// Send us there.
@@ -312,7 +327,7 @@ class pB
 	}
 
 	/*
-	* Show some recent pastes
+	* Show some recent pastes.
 	*/
 	public function showRecent()
 	{
@@ -343,16 +358,17 @@ class pB
 				</li>
 			</ul>';
 
+		// Close up the wrapper.
 		if (is_callable(array($this->tpl, 'recentBottom')))
 			$this->tpl->recentBottom();
 	}
 
 	/*
-	* Shows a form for making/editing a paste
-	* @param $code string A string containing the actual code for the code box
-	* @param $id (optiona) int The id of the paste
+	* Shows a form for making/editing a paste.
+	* @param $code string A string containing the actual code for the code box.
+	* @param $id (optiona) int The id of the paste.
 	* @param $use_geshi (optiona) bool Whether to use geshi or not.
-	* @param $geshi_language (optional) string The default language to use, ie php
+	* @param $geshi_language (optional) string The default language to use, ie php.
 	*/
 	public function postForm($code, $id = 0, $use_geshi = true, $geshi_language = 'php')
 	{
@@ -365,6 +381,7 @@ class pB
 					<span id="name_text" class="container_text">', pBL('user_name'), ':</span>
 					<span id="name_value" class="container_value">';
 
+		// The user handler says you are a guest.
 		if ($this->usr->is_guest())
 			echo '
 						<input type="text" name="name" value="', !empty($_POST['name']) ? htmlspecialchars($_POST['name']) : 'Guest', '" />';
@@ -380,6 +397,7 @@ class pB
 					<span id="email_text" class="container_text">', pBL('email'), ':</span>
 					<span id="email_value class="container_value">';
 
+		// Guests can enter their email, users get it auto filled.
 		if ($this->usr->is_guest())
 			echo '
 						<input type="text" name="email" value="', !empty($_POST['email']) ? htmlspecialchars($_POST['email']) : 'your+name@domain.com', '" />';
@@ -443,7 +461,7 @@ class pB
 	}
 
 	/*
-	* Shows an existing paste
+	* Shows an existing paste.
 	* @param $id int The id of the paste to load up.
 	*/
 	public function showPaste($id)

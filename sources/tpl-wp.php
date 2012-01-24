@@ -1,12 +1,12 @@
 <?php
 
 /*
-* Sets up the basic Theme handler for Pastebin
+* WordPress Theme handler for Pastebin.
 */
 class pTPL_wp extends pTPL
 {
 	/*
-	* Do the header
+	* Do the header.
 	*/
 	public function htmlHead($title)
 	{

@@ -1,7 +1,7 @@
 <?php
 
 /*
-* Sets up the basic Theme handler for Pastebin
+* SMF Theme handler for Pastebin.
 */
 class pTPL_smf extends pTPL
 {
@@ -21,8 +21,8 @@ class pTPL_smf extends pTPL
 	}
 
 	/*
-	* Do the header
-	* @Note: Because we used ssi earlier to star the SMF theme, we have nothing to do here
+	* Do the header.
+	* @Note: Because we used ssi earlier to star the SMF theme, we have nothing to do here.
 	*/
 	public function htmlHead($title)
 	{

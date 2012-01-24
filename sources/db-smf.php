@@ -1,7 +1,7 @@
 <?php
 
 /*
-* Basic handler for database interaction
+* SMF handler for database interaction.
 */
 class pDB_smf extends pDB
 {
@@ -65,7 +65,7 @@ class pDB_smf extends pDB
 
 	/*
 	* Fetches all the information abouta a paste.
-	* @param $id int The id of the paste
+	* @param $id int The id of the paste.
 	*/
 	public function fetchPaste($id)
 	{
@@ -184,7 +184,7 @@ class pDB_smf extends pDB
 }
 
 /*
-* smcFunc as a class.  Uses callStatic to emulate it.
+* smcFunc as a class. Uses callStatic to emulate it.
 */
 class smcFunc
 {

@@ -27,14 +27,6 @@ class pBS
 	private static $languages = './languages';
 	private static $default_language = 'english';
 
-	// Where SMF is at.
-	private static $smf_dir = '../forum/';
-	private static $smf_paste_board = 4;
-	private static $smf_increase_postcout = true;
-	private static $smf_post_approval = false;
-	private static $smf_use_theme = true;
-	private static $smf_theme_id = 1;
-
 	// The URLs
 	private static $url_sef = true;
 	private static $sef_base = '/pastebin';
@@ -57,6 +49,14 @@ class pBS
 	// Recent limits.
 	private static $recent_limit = 10;
 	private static $recent_limit_admin = 50;
+
+	// When we are using SMF, we need to know where it is.
+	private static $smf_dir = '../forum/';
+	private static $smf_paste_board = 4;
+	private static $smf_increase_postcout = true;
+	private static $smf_post_approval = false;
+	private static $smf_use_theme = true;
+	private static $smf_theme_id = 1;
 
 	/*
 	* DO NOT MODIFY THIS.

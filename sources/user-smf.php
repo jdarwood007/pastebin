@@ -1,7 +1,7 @@
 <?php
 
 /*
-* Sets up the basic User handler for Pastebin
+* SMF User handler for Pastebin.
 */
 class pUser_smf extends pUser
 {
