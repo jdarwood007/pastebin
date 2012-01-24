@@ -1,4 +1,11 @@
 <?php
+/*
+ * SMF PasteBin
+ * Author: SleePy (JeremyD)
+ * Repository: https://github.com/jdarwood007/pastebin
+ * License: BSD 3 Clause; See license.txt
+*/
+define('SMFPasteBin', true);
 
 // Load the primary file.
 require_once(dirname(__FILE__) . '/settings.php');
