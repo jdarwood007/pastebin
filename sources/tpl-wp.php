@@ -13,21 +13,22 @@ if (!defined('SMFPasteBin')) { exit('[' . basename(__FILE__) . '] Direct access 
 class pTPL_wp extends pTPL
 {
 	/*
+	* Lets get things cooking.
+	*/
+	public function __construct()
+	{
+		wp_enqueue_style('pastebin', pBS::get('css'));
+	}
+
+	/*
 	* Do the header.
+	* @param $title String the page title.
 	*/
 	public function htmlHead($title)
 	{
 		global $specialPage;
 
 		$specialPage['title'] = $title;
-	}
-
-	/*
-	* Lets get things cooking.
-	*/
-	public function __construct()
-	{
-		wp_enqueue_style('pastebin', pBS::get('css'));
 	}
 
 	/*

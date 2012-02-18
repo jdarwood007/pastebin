@@ -29,6 +29,7 @@ class pTPL_smf extends pTPL
 
 	/*
 	* Do the header.
+	* @param $title String the page title.
 	* @Note: Because we used ssi earlier to star the SMF theme, we have nothing to do here.
 	*/
 	public function htmlHead($title)

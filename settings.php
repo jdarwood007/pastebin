@@ -22,10 +22,14 @@ class pBS
 	private static $db = 'smf';
 
 	/* User Handler. */
-	private static $user = 'smf';
+	private static $usr = 'smf';
 
 	/* Template Handler. */
 	private static $tpl = 'wp';
+
+	/* Template Handler. */
+//	private static $antispam = 'recaptcha';
+	private static $antispam = 'basic';
 
 	/* Any preloader file needed? */
 	private static $preload = '__integrate.php';
@@ -64,15 +68,21 @@ class pBS
 	/* GESHI: The default language to use. */
 	private static $geshi_default = 'php';
 
-	/* HUMAN CHECK: Enable the human check? */
+	/* ANTI-SPAM (BASIC): Enable the human check? */
 	private static $human_check = true;
 
-	/* HUMAN CHECK: The question to ask. */
+	/* ANTI-SPAM (BASIC): The question to ask. */
 	private static $human_question = 'A duck, cat and a goose walk into a bar. How many animals walked into a bar?';
 
-	/* HUMAN CHECK: The answer they need to provide. */
+	/* ANTI-SPAM (BASIC): The answer they need to provide. */
 	private static $human_answer = '3';
 
+	/* ANTI-SPAM (RECAPTCHA): If using Recaptcha as your anti-spam handler enter your key here */
+	private static $recaptcha_key = '';
+
+	/* ANTI-SPAM (RECAPTCHA): If using Recaptcha as your anti-spam handler enter your private key here */
+	private static $recaptcha_private_key = '';
+	
 	/* SMF: When we are using SMF, we need to know where it is. */
 	private static $smf_dir = '../forum/';
 

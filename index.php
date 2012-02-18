@@ -23,7 +23,7 @@ $pasteBin->showRecent();
 // Handles the actions.
 if (isset($_POST['submit']))
 	$pasteBin->action_paste();
-if (isset($_GET['view']))
+elseif (isset($_GET['view']))
 	$pasteBin->action_view($_GET['view']);
 else
 	$pasteBin->action_index();
@@ -46,6 +46,8 @@ class pB
 	private $db = null;
 	private $usr = null;
 	private $tpl = null;
+	private $antispam = null;
+	private $warnings = array();
 
 	/*
 	* Setup the settings when creating the object.
@@ -56,54 +58,55 @@ class pB
 		if (file_exists(dirname(__FILE__) . '/settings-' . pathinfo(basename($_SERVER['SCRIPT_FILENAME']), PATHINFO_FILENAME) . '.php'))
 			require_once(dirname(__FILE__) . '/settings-' . pathinfo(basename($_SERVER['SCRIPT_FILENAME']), PATHINFO_FILENAME). '.php');
 
-		// Start up our database.
-		require_once(pBS::get('sources') . '/db.php');
-		if (file_exists(pBS::get('sources') . '/db-' . pBS::get('db') . '.php'))
-		{
-			require_once(pBS::get('sources') . '/db-' . pBS::get('db') . '.php');
-
-			$class = 'pDB_' . pBS::get('db');
-			if (class_exists($class))
-				$this->db = new $class;
-			else
-				$this->error('Database is defined but no such class exists.');
-		}
-		else
-			$this->error('No database handler is defined.');
-
-		// Start up our User handler.
-		require_once(pBS::get('sources') . '/user.php');
-		if (file_exists(pBS::get('sources') . '/user-' . pBS::get('user') . '.php'))
-		{
-			require_once(pBS::get('sources') . '/user-' . pBS::get('user') . '.php');
-
-			$class = 'pUser_' . pBS::get('user');
-			if (class_exists($class))
-				$this->usr = new $class;
-			else
-				$this->error('User is defined but no such class exists.');
-		}
-		else
-			$this->error('No user handler is defined.');
-
-		// Start up our Template handler.
-		require_once(pBS::get('sources') . '/tpl.php');
-		if (file_exists(pBS::get('sources') . '/tpl-' . pBS::get('tpl') . '.php'))
-		{
-			require_once(pBS::get('sources') . '/tpl-' . pBS::get('tpl') . '.php');
-
-			$class = 'pTPL_' . pBS::get('tpl');
-			if (class_exists($class))
-				$this->tpl = new $class;
-			else
-				$this->error('Template is defined but no such class exists.');
-		}
-		else
-			$this->error('No template handler is defined.');
+		// This will get some of our handler going.
+		$this->startHandler('db', 'db', 'pDB');
+		$this->startHandler('user', 'usr', 'pUser');
+		$this->startHandler('tpl', 'tpl', 'pTPL');
+		$this->startHandler('spam', 'antispam', 'pAS');
 
 		// Start getting things going.
 		$this->loadLanguage();
 		$this->loadGeshi();
+	}
+
+	/*
+	* Setup a handler for usage.
+	* @param $file String The main name of the handler we are loading.
+	* @param $var String The variable we will store this under.  As well this is the setting name we look for when loading that extra class.
+	* @param $class_name String The name of the class this will load.
+	* @param $extension String When we use this, we ignore using $var as extension of the class we are loading.
+	*/
+	public function startHandler($file, $var, $class_name, $extension = '')
+	{
+		if (!file_exists(pBS::get('sources') . '/'. $file . '.php'))
+			$this->error('Failed to start Handler (' . $var . ') as file (' . $file . ' ) does not exist.');
+
+		if (empty($extension))
+			$extension = pBS::get($var);
+
+		require_once(pBS::get('sources') . '/'. $file . '.php');
+		if (file_exists(pBS::get('sources') . '/'. $file . '-' . $extension . '.php'))
+		{
+			require_once(pBS::get('sources') . '/'. $file . '-' . $extension . '.php');
+
+			$class = $class_name . '_' . pBS::get($var);
+			if (class_exists($class))
+				$this->{$var} = new $class;
+			else
+				$this->error($var . ' Handler is defined but no such class exists.');
+
+			// If this had a classActive method, we need to verify this before we go on.
+			if (method_exists($this->{$var}, 'classActive') && ($result = $this->{$var}->classActive()) !== true)
+			{
+				// If the result returned nothing, we got no fall back.
+				if (empty($result))
+					$this->error('Invalid Handler setup for ' . $file);
+
+				$this->startHandler($file, $var, $class_name, $result);
+			}
+		}
+		else
+			$this->error('No ' . $var . ' handler is defined.');
 	}
 
 	/*
@@ -268,6 +271,14 @@ class pB
 		if (is_callable(array($this->tpl, 'htmlHead')))
 			$this->tpl->htmlHead($this->title);
 
+		// Give admins a hint what the key is.
+		if (!empty($this->warnings))
+			echo '
+			<div class="alert alert-error">
+			<h4 class="alert-heading">This paste has failed to be created because:</h4>
+			', implode('<br />', $this->warnings), '
+			</div>';
+
 		$paste = $this->showPaste($id);
 
 		// Give admins a hint what the key is.
@@ -296,10 +307,22 @@ class pB
 		$do_create = true;
 
 		if ($this->usr->id() > 0 && (empty($_POST['name']) || empty($_POST['email'])))
+		{
+			$this->warnings[] = 'Missing information (Username/email)';
 			$do_create = false;
+		}
 
 		if (empty($_POST['code']))
+		{
+			$this->warnings[] = 'Nothing entered into the code box';
 			$do_create = false;
+		}
+
+		if (pBS::get('human_check') && $this->antispam->verify(&$this->warnings) === false)
+			$do_create = false;
+
+		if (!empty($this->warnings) && isset($_POST['iHateU']))
+			$this->warnings[] = 'I do not like you either';
 
 		// Get the data ready.
 		$data = array(
@@ -313,12 +336,10 @@ class pB
 		);
 
 		// Do a test.
-		$this->db->addPasteTest(&$data, &$do_create);
+		$this->db->addPasteTest(&$data, &$do_create, &$this->warnings);
 
 		if (!$do_create)
 		{
-			$this->warningss[] = 'Missing information (Username/email)';
-
 			if (!empty($_POST['view']))
 				$this->action_view($_POST['view']);
 			else
@@ -453,8 +474,11 @@ class pB
 					<li><input type="checkbox" name="force_new_pw" /><strong>', pBL('force_new_key'), '</strong></li>';
 
 		if (pBS::get('human_check'))
-			echo '
-					<li>', pBS::get('human_question'), ':<input type="text" name="ru_human" value="', isset($_POST['ru_human']) ? $_POST['ru_human'] : '', '" /></li>';
+		{
+			echo '<li>';
+			$this->antispam->template();
+			echo '</li>';
+		}
 
 		echo '
 				</ul>';

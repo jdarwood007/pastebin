@@ -12,5 +12,4 @@ if (!defined('SMFPasteBin')) { exit('[' . basename(__FILE__) . '] Direct access 
 */
 class pUser
 {
-
 }

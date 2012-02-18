@@ -111,7 +111,7 @@ class pDB_smf extends pDB
 			'approved' => $topic['approved'],
 			'use_geshi' => $Paste['use_geshi'],
 			'language' => $Paste['type'],
-			'body' => $topic['body'],
+			'body' => htmlspecialchars_decode($topic['body']),
 			'parsed' => '',
 		);	
 	}
@@ -158,6 +158,11 @@ class pDB_smf extends pDB
 			$data['key'] = $this->generateKey();
 		elseif (!empty($paste['key']))
 			$data['key'] = $paste['key'];
+
+		if (function_exists('wp_magic_quotes'))
+		{
+			$data['body'] = stripslashes($data['body']);
+		}
 
 		// Options needed for our post.
 		$topicOptions = array(
