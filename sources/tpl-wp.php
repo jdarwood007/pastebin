@@ -49,16 +49,18 @@ class pTPL_wp extends pTPL
 		// Lets not always show the source links.
 		if (defined('PB_SHOW_SOURCE'))
 			echo '
+			<!-- Start Show Source -->
 			<br />
 			<ul>
 				<li class="widget">
 					<h2 class="widgettitle">See the Source</h2>
 					<ul>
-						<li><a href="http://git.sleepycode.com/?a=summary&p=SMF%20Pastebin">Local Source</li>
-						<li><a href="https://github.com/jdarwood007/pastebin">GitHub</li>
+						<li><a href="http://git.sleepycode.com/?a=summary&p=SMF%20Pastebin">Local Source</a></li>
+						<li><a href="https://github.com/jdarwood007/pastebin">GitHub</a></li>
 					</ul>
 				</li>
-			</ul>';
+			</ul>
+			<!-- End Show Source -->';
 
 		$specialPage['sidebar'] = ob_get_contents();
 		ob_end_clean();

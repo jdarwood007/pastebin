@@ -53,6 +53,7 @@ class pTPL_smf extends pTPL
 	public function recentTop()
 	{
 		echo '
+			<!-- Start Recent Box -->
 			<div id="paste_recent" class="floatright">';
 	}
 
@@ -62,6 +63,7 @@ class pTPL_smf extends pTPL
 	public function recentBottom()
 	{
 		echo '
-			</div>';
+			</div>
+			<!-- End Recent Box -->';
 	}
 }

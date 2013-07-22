@@ -244,7 +244,13 @@ class pB
 		$this->title = pBL('index_title');
 
 		if (is_callable(array($this->tpl, 'htmlHead')))
+		{
+			echo '
+			<!-- Start HTML Header -->';
 			$this->tpl->htmlHead($this->title);
+			echo '
+			<!-- End HTML Header -->';
+		}
 
 		// Trying to save this paste?
 		if (isset($_POST['save']))
@@ -252,12 +258,21 @@ class pB
 
 		// Show any errors.
 		if (!empty($warnings))
-			echo '<div class="error_message">', implode('<br />', $warnings), '</div>';
+			echo '
+			<!-- Start Warnings -->
+			<div class="error_message">', implode('<br />', $warnings), '</div>
+			<!-- End Warnings -->';
 
 		$this->postForm((!empty($_POST['code']) ? $_POST['code'] : ''));
 
 		if (is_callable(array($this->tpl, 'htmlFooter')))
+		{
+			echo '
+			<!-- Start HTML Footer -->';
 			$this->tpl->htmlFooter();
+			echo '
+			<!-- End HTML Footer -->';
+		}
 	}
 
 	/*
@@ -269,34 +284,52 @@ class pB
 		$this->title = pBL('view_title', $id);
 
 		if (is_callable(array($this->tpl, 'htmlHead')))
+		{
+			echo '
+			<!-- Start HTML Header -->';
 			$this->tpl->htmlHead($this->title);
+			echo '
+			<!-- End HTML Header -->';
+		}
 
 		// Give admins a hint what the key is.
 		if (!empty($this->warnings))
 			echo '
+			<!-- Start Admin Warning -->
 			<div class="alert alert-error">
-			<h4 class="alert-heading">This paste has failed to be created because:</h4>
-			', implode('<br />', $this->warnings), '
-			</div>';
+				<h4 class="alert-heading">This paste has failed to be created because:</h4>
+				', implode('<br />', $this->warnings), '
+			</div>
+			<!-- End Admin Warning -->';
 
 		$paste = $this->showPaste($id);
 
 		// Give admins a hint what the key is.
 		if (!empty($paste['key']) && $this->usr->is_admin())
 			echo '
-			<div class="information"><b>Key:</b> ', $paste['key'], '</div>';
+			<!-- Start Admin Key Hint -->
+			<div class="information"><b>Key:</b> ', $paste['key'], '</div>
+			<!-- End Admin Key Hint -->';
 
 		if (!empty($paste['parsed']))
 			echo '
+			<!-- Start Parsed Content -->
 			<div id="formated">
 				<h2>', pBL('formated_paste'), '</h2>
 				<div id="formated_paste">', $paste['parsed'], '</div>
-			</div>';
+			</div>
+			<!-- End Parsed Content -->';
 
 		$this->postForm($paste['body'], $id, $paste['use_geshi'], $paste['language']);
 
 		if (is_callable(array($this->tpl, 'htmlFooter')))
+		{
+			echo '
+			<!-- Start HTML Footer -->';
 			$this->tpl->htmlFooter();
+			echo '
+			<!-- End HTML Footer -->';
+		}
 	}
 
 	/*
@@ -371,10 +404,17 @@ class pB
 
 		// Start to wrap it in a template if needed.
 		if (is_callable(array($this->tpl, 'recentTop')))
+		{
+			echo '
+			<!-- Start Show Recent Top -->';
 			$this->tpl->recentTop();
+			echo '
+			<!-- End Show Recent Top -->';
+		}
 
 		// Output this.
 		echo '
+			<!-- Start Recent -->
 			<ul>		
 				<li class="widget">
 					<h2 class="widgettitle" title="I am not a Easter Egg">', pBL('recent'), '</h2>
@@ -388,11 +428,18 @@ class pB
 		echo '
 					</ul>
 				</li>
-			</ul>';
+			</ul>
+			<!-- End Recent -->';
 
 		// Close up the wrapper.
 		if (is_callable(array($this->tpl, 'recentBottom')))
+		{
+			echo '
+			<!-- End Show Recent Bottom -->';
 			$this->tpl->recentBottom();
+			echo '
+			<!-- End Show Recent Bottom -->';
+		}
 	}
 
 	/*
@@ -405,9 +452,16 @@ class pB
 	public function postForm($code, $id = 0, $use_geshi = true, $geshi_language = 'php')
 	{
 		if (is_callable(array($this->tpl, 'postTop')))
+		{
+			echo '
+			<!-- Start New Paste Top -->';
 			$this->tpl->postTop();
+			echo '
+			<!-- End New Paste Top -->';
+		}
 
 		echo '
+			<!-- Start Post Form -->
 			<form method="post" action="', $this->URL('post'), '">
 				<div id="name_container">
 					<span id="name_text" class="container_text">', pBL('user_name'), ':</span>
@@ -475,7 +529,8 @@ class pB
 
 		if (pBS::get('human_check'))
 		{
-			echo '<li>';
+			echo '
+					<li>';
 			$this->antispam->template();
 			echo '</li>';
 		}
@@ -489,10 +544,17 @@ class pB
 
 		echo '
 				<input id="submit" type="submit" name="submit" value="', pBL('submit'), '" />
-			</form>';
+			</form>
+			<!-- End Post Form -->';
 
 		if (is_callable(array($this->tpl, 'postBottom')))
+		{
+			echo '
+			<!-- Start New Paste Bottom -->';
 			$this->tpl->postBottom();
+			echo '
+			<!-- End New Paste Bottom -->';
+		}
 	}
 
 	/*
