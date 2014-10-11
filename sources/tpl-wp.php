@@ -50,16 +50,13 @@ class pTPL_wp extends pTPL
 		if (defined('PB_SHOW_SOURCE'))
 			echo '
 			<!-- Start Show Source -->
-			<br />
-			<ul>
-				<li class="widget">
-					<h2 class="widgettitle">See the Source</h2>
-					<ul>
-						<li><a href="http://git.sleepycode.com/?a=summary&p=SMF%20Pastebin">Local Source</a></li>
-						<li><a href="https://github.com/jdarwood007/pastebin">GitHub</a></li>
-					</ul>
-				</li>
-			</ul>
+			<aside class="widget widget_pages">
+				<h3 class="widget-title">See the Source</h3>
+				<ul>
+					<li><a href="http://git.sleepycode.com/?a=summary&p=SMF%20Pastebin">Local Source</a></li>
+					<li><a href="https://github.com/jdarwood007/pastebin">GitHub</a></li>
+				</ul>
+			</aside>
 			<!-- End Show Source -->';
 
 		$specialPage['sidebar'] = ob_get_contents();

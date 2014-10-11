@@ -351,7 +351,7 @@ class pB
 			$do_create = false;
 		}
 
-		if (pBS::get('human_check') && $this->antispam->verify(&$this->warnings) === false)
+		if (pBS::get('human_check') && $this->antispam->verify($this->warnings) === false)
 			$do_create = false;
 
 		if (!empty($this->warnings) && isset($_POST['iHateU']))
@@ -369,7 +369,7 @@ class pB
 		);
 
 		// Do a test.
-		$this->db->addPasteTest(&$data, &$do_create, &$this->warnings);
+		$this->db->addPasteTest($data, $do_create, $this->warnings);
 
 		if (!$do_create)
 		{
@@ -415,20 +415,18 @@ class pB
 		// Output this.
 		echo '
 			<!-- Start Recent -->
-			<ul>		
-				<li class="widget">
-					<h2 class="widgettitle" title="I am not a Easter Egg">', pBL('recent'), '</h2>
-					<ul>
-						<li><a href="', $this->URL('index'), '">', pBL('create_new'), '</a></li>';
+			<aside class="widget widget_pages">
+				<h3 class="widget-title" title="I am not a Easter Egg">', pBL('recent'), '</h3>
+				<ul>		
+					<li><a href="', $this->URL('index'), '">', pBL('create_new'), '</a></li>';
 
 			foreach ($recent as $rec)
 				echo '
-						<li><a href="', $this->URL('view', $rec), '">#', $rec, '</a></li>';
+					<li><a href="', $this->URL('view', $rec), '">#', $rec, '</a></li>';
 
 		echo '
-					</ul>
-				</li>
-			</ul>
+				</ul>
+			</aside>
 			<!-- End Recent -->';
 
 		// Close up the wrapper.
@@ -580,13 +578,13 @@ class pB
 			$type = !empty($paste['language']) ? $paste['language'] : 'php';
 
 			include_once(pBS::get('geshi_location')  . '/geshi.php');
-			
-			$geshi =& new GeSHi('', $type);
-			$geshi->set_header_type(GESHI_HEADER_PRE);
-			$geshi->enable_line_numbers(GESHI_FANCY_LINE_NUMBERS);
 
-			$geshiErr =& new GeSHi($paste['body'], $type);
-			$geshiErr->enable_line_numbers(GESHI_FANCY_LINE_NUMBERS, 2);
+			$geshi = new GeSHi('', $type);
+			$geshi->set_header_type(GESHI_HEADER_PRE);
+			$geshi->enable_line_numbers(GESHI_NORMAL_LINE_NUMBERS);
+
+			$geshiErr = new GeSHi($paste['body'], $type);
+			$geshiErr->enable_line_numbers(GESHI_NORMAL_LINE_NUMBERS, 2);
 			$topic_parsed = $geshiErr->parse_code();
 			$topic_parsed = str_replace('&lt;?php', '<&#063;php', $topic_parsed);
 
