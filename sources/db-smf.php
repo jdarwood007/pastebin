@@ -23,7 +23,7 @@ class pDB_smf extends pDB
 		global $db_server, $db_name, $db_user, $db_prefix, $db_persist, $db_error_send, $db_last_error;
 		global $db_connection, $modSettings, $context, $sc, $user_info, $topic, $board, $txt;
 		global $smcFunc, $ssi_db_user, $scripturl, $ssi_db_passwd, $db_passwd, $cachedir;
-		global $ssi_theme, $ssi_layers;
+		global $ssi_theme, $ssi_layers, $db_type;
 
 		// We strip the slashes from the cookie which resolves the issue.
 		require_once(pBS::get('smf_dir') . '/Settings.php');
@@ -128,7 +128,7 @@ class pDB_smf extends pDB
 		$data[body] String the actual contents of the paste.
 	* @param $do_create Should we create this or not?  Only set this to false when we shouldn't.
 	*/
-	public function addPasteTest($data, $do_create)
+	public function addPasteTest(&$data, &$do_create)
 	{
 	}
 
